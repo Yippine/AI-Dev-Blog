@@ -1,5 +1,5 @@
 // HomePage Component
-// HomePage = ArticleList + Pagination + Loading + Error
+// HomePage = ArticleList + Pagination + Loading + Error + SEO
 
 import { useState, useEffect } from 'react';
 import { articleApi } from '../services/api';
@@ -8,6 +8,7 @@ import ArticleCard from '../components/ArticleCard';
 import Pagination from '../components/Pagination';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import SEO from '../components/SEO';
 
 export default function HomePage() {
   const [data, setData] = useState<ArticleListResponse | null>(null);
@@ -50,6 +51,12 @@ export default function HomePage() {
 
   return (
     <div>
+      <SEO
+        title="Blog System - 最新文章"
+        description="探索最新發布的技術文章、程式設計教學和開發心得"
+        keywords="blog, articles, tech, programming, web development"
+        type="website"
+      />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">最新文章</h1>
         <p className="text-gray-600">探索最新發布的內容</p>

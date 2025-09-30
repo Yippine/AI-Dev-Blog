@@ -94,4 +94,20 @@ export class CategoryService {
       where: { id }
     });
   }
+
+  // GET all categories for sitemap generation
+  async getAllCategories() {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    return categories;
+  }
 }
+
+export const categoryService = new CategoryService();

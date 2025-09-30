@@ -1,5 +1,5 @@
 // ArticleDetailPage Component
-// ArticleDetailPage = ArticleContent + Metadata + Tags + Category + InteractionSystem
+// ArticleDetailPage = ArticleContent + Metadata + Tags + Category + InteractionSystem + SEO
 // InteractionSystem = LikeButton + ShareButtons + CommentSection
 
 import { useState, useEffect, useContext } from 'react';
@@ -13,6 +13,7 @@ import LikeButton from '../components/LikeButton';
 import ShareButtons from '../components/ShareButtons';
 import CommentSection from '../components/CommentSection';
 import { UserContext } from '../contexts/UserContext';
+import SEO from '../components/SEO';
 
 export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -56,6 +57,16 @@ export default function ArticleDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <SEO
+        title={`${article.title} - Blog System`}
+        description={article.summary}
+        keywords={article.tags.map(tag => tag.name).join(', ')}
+        author={article.author}
+        type="article"
+        publishedTime={article.publishDate}
+        articleTags={article.tags.map(tag => tag.name)}
+        url={window.location.href}
+      />
       <article className="bg-white rounded-lg shadow-md p-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>

@@ -1,7 +1,7 @@
 // API Routes
 // Routes = PublicRoutes(GET) + AdminRoutes(POST + PUT + DELETE × AuthMiddleware × requireRole('admin'))
 //        + UserRoutes(register, login, profile × AuthMiddleware) + AuthRoutes(admin_login) + UploadRoutes
-//        + InteractionRoutes(comments, likes × AuthMiddleware)
+//        + InteractionRoutes(comments, likes × AuthMiddleware) + SEORoutes(sitemap)
 
 import { Router } from 'express';
 import { ArticleController } from '../controllers/articleController';
@@ -12,6 +12,7 @@ import { UploadController } from '../controllers/uploadController';
 import { UserController } from '../controllers/userController';
 import { CommentController } from '../controllers/commentController';
 import { LikeController } from '../controllers/likeController';
+import { sitemapController } from '../controllers/sitemapController';
 import { authMiddleware, requireRole } from '../middleware/authMiddleware';
 import { upload } from '../middleware/uploadMiddleware';
 
@@ -90,5 +91,9 @@ router.post('/likes', authMiddleware, likeController.toggleLike.bind(likeControl
 router.get('/likes/article/:articleId/check', likeController.checkUserLiked.bind(likeController)); // Public (returns false if not authenticated)
 router.get('/likes/article/:articleId/count', likeController.getLikeCount.bind(likeController)); // Public
 router.get('/likes/user', authMiddleware, likeController.getUserLikedArticles.bind(likeController)); // Auth Required
+
+// ========== SEO Routes ==========
+// Dynamic sitemap generation
+router.get('/sitemap.xml', sitemapController.generateSitemap.bind(sitemapController)); // Public
 
 export default router;

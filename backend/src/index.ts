@@ -1,5 +1,5 @@
 // Backend Entry Point
-// Server = Express + Middleware + Routes + ErrorHandler
+// Server = Express + Middleware + Routes + ErrorHandler + Logging
 
 import express from 'express';
 import cors from 'cors';
@@ -8,13 +8,17 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import routes from './routes';
 import { errorHandler } from './middleware/errorHandler';
+import { loggingMiddleware, errorLoggingMiddleware } from './middleware/loggingMiddleware';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Logging middleware (first)
+app.use(loggingMiddleware);
+
+// Security middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -36,6 +40,9 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api', routes);
+
+// Error logging middleware (before error handler)
+app.use(errorLoggingMiddleware);
 
 // Error handler (must be last)
 app.use(errorHandler);

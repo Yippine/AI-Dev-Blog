@@ -326,4 +326,21 @@ export class ArticleService {
       data: { articleCount: { decrement: 1 } }
     });
   }
+
+  // GET all articles for sitemap generation
+  async getAllArticles() {
+    const articles = await prisma.article.findMany({
+      where: { status: 'published' },
+      select: {
+        id: true,
+        title: true,
+        publishDate: true
+      },
+      orderBy: { publishDate: 'desc' }
+    });
+
+    return articles;
+  }
 }
+
+export const articleService = new ArticleService();

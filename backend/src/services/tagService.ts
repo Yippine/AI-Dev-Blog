@@ -92,4 +92,20 @@ export class TagService {
       where: { id }
     });
   }
+
+  // GET all tags for sitemap generation
+  async getAllTags() {
+    const tags = await prisma.tag.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    return tags;
+  }
 }
+
+export const tagService = new TagService();
