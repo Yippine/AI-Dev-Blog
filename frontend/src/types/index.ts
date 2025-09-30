@@ -1,5 +1,5 @@
 // Frontend Type Definitions
-// Types = Article + Category + Tag + API
+// Types = Article + Category + Tag + API + User + Comment + Like
 
 export interface Article {
   id: string;
@@ -9,6 +9,8 @@ export interface Article {
   author: string;
   publishDate: string;
   viewCount: number;
+  commentCount?: number;
+  likeCount?: number;
   categoryId: string;
   category: Category;
   tags: Tag[];
@@ -39,4 +41,13 @@ export interface Pagination {
 export interface ArticleListResponse {
   articles: Article[];
   pagination: Pagination;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  role: string;
+  nickname: string | null;
+  avatar: string | null;
+  bio: string | null;
 }

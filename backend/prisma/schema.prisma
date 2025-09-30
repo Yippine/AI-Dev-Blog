@@ -1,10 +1,14 @@
 // BlogSystem DataModel Formula:
-// DataModel = Article(id, title, content, summary, author, publish_date, view_count, category_id, status, published_at)
+// DataModel = Article(id, title, content, summary, author, publish_date, view_count, category_id, status, published_at, comment_count, like_count)
 //           × Category(id, name, slug, article_count)
 //           × Tag(id, name, slug)
 //           × ArticleTag(article_id, tag_id)
 //           × User(id, email, password_hash, role, nickname, avatar, bio, created_at)
+//           × Comment(id, content, user_id, article_id, created_at)
+//           × Like(id, user_id, article_id, created_at)
 // ∂User = +nickname(String?) + avatar(String?) + bio(String?) + role ∈ {admin, user}
+// ∂Article = +commentCount(Int) + likeCount(Int)
+// InteractionSystem = Comment(user => article) + Like(user => article)
 
 generator client {
   provider = "prisma-client-js"
@@ -26,6 +30,9 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
+  comments Comment[]
+  likes    Like[]
+
   @@map("users")
 }
 
@@ -44,21 +51,25 @@ model Category {
 }
 
 model Article {
-  id          String    @id @default(cuid())
-  title       String
-  content     String    @db.Text
-  summary     String?
-  author      String
-  status      String    @default("draft")
-  publishDate DateTime  @default(now()) @map("publish_date")
-  publishedAt DateTime? @map("published_at")
-  viewCount   Int       @default(0) @map("view_count")
-  categoryId  String    @map("category_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id           String    @id @default(cuid())
+  title        String
+  content      String    @db.Text
+  summary      String?
+  author       String
+  status       String    @default("draft")
+  publishDate  DateTime  @default(now()) @map("publish_date")
+  publishedAt  DateTime? @map("published_at")
+  viewCount    Int       @default(0) @map("view_count")
+  commentCount Int       @default(0) @map("comment_count")
+  likeCount    Int       @default(0) @map("like_count")
+  categoryId   String    @map("category_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
   category Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   tags     ArticleTag[]
+  comments Comment[]
+  likes    Like[]
 
   @@index([categoryId])
   @@index([publishDate])
@@ -90,4 +101,36 @@ model ArticleTag {
   @@index([articleId])
   @@index([tagId])
   @@map("article_tags")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  userId    String   @map("user_id")
+  articleId String   @map("article_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([articleId])
+  @@index([createdAt])
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  articleId String   @map("article_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([userId])
+  @@index([articleId])
+  @@map("likes")
 }

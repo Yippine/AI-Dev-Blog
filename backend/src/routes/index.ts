@@ -1,6 +1,7 @@
 // API Routes
 // Routes = PublicRoutes(GET) + AdminRoutes(POST + PUT + DELETE × AuthMiddleware × requireRole('admin'))
 //        + UserRoutes(register, login, profile × AuthMiddleware) + AuthRoutes(admin_login) + UploadRoutes
+//        + InteractionRoutes(comments, likes × AuthMiddleware)
 
 import { Router } from 'express';
 import { ArticleController } from '../controllers/articleController';
@@ -9,6 +10,8 @@ import { TagController } from '../controllers/tagController';
 import { AuthController } from '../controllers/authController';
 import { UploadController } from '../controllers/uploadController';
 import { UserController } from '../controllers/userController';
+import { CommentController } from '../controllers/commentController';
+import { LikeController } from '../controllers/likeController';
 import { authMiddleware, requireRole } from '../middleware/authMiddleware';
 import { upload } from '../middleware/uploadMiddleware';
 
@@ -20,6 +23,8 @@ const tagController = new TagController();
 const authController = new AuthController();
 const uploadController = new UploadController();
 const userController = new UserController();
+const commentController = new CommentController();
+const likeController = new LikeController();
 
 // ========== Public Routes (No Auth) ==========
 
@@ -71,5 +76,19 @@ router.delete('/tags/:id', authMiddleware, requireRole('admin'), tagController.d
 
 // Upload (Admin)
 router.post('/upload/image', authMiddleware, requireRole('admin'), upload.single('image'), uploadController.uploadImage.bind(uploadController));
+
+// ========== Interaction Routes ==========
+
+// Comment routes
+router.get('/comments/article/:articleId', commentController.getCommentsByArticle.bind(commentController)); // Public
+router.post('/comments', authMiddleware, commentController.createComment.bind(commentController)); // Auth Required
+router.delete('/comments/:commentId', authMiddleware, commentController.deleteComment.bind(commentController)); // Auth Required (Owner or Admin)
+router.get('/comments/user', authMiddleware, commentController.getUserComments.bind(commentController)); // Auth Required
+
+// Like routes
+router.post('/likes', authMiddleware, likeController.toggleLike.bind(likeController)); // Auth Required
+router.get('/likes/article/:articleId/check', likeController.checkUserLiked.bind(likeController)); // Public (returns false if not authenticated)
+router.get('/likes/article/:articleId/count', likeController.getLikeCount.bind(likeController)); // Public
+router.get('/likes/user', authMiddleware, likeController.getUserLikedArticles.bind(likeController)); // Auth Required
 
 export default router;

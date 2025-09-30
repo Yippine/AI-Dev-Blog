@@ -1,5 +1,5 @@
 // Type definitions for Blog System
-// Types = Article + Category + Tag + Query
+// Types = Article + Category + Tag + Query + Comment + Like
 
 export interface Article {
   id: string;
@@ -9,6 +9,8 @@ export interface Article {
   author: string;
   publishDate: Date;
   viewCount: number;
+  commentCount: number;
+  likeCount: number;
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -50,4 +52,39 @@ export interface ArticleListResponse {
     total: number;
     totalPages: number;
   };
+}
+
+export interface User {
+  id: string;
+  email: string;
+  role: string;
+  nickname: string | null;
+  avatar: string | null;
+  bio: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  userId: string;
+  articleId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CommentWithUser extends Comment {
+  user: {
+    id: string;
+    nickname: string | null;
+    avatar: string | null;
+  };
+}
+
+export interface Like {
+  id: string;
+  userId: string;
+  articleId: string;
+  createdAt: Date;
 }

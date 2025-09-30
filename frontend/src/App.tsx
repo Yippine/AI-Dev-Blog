@@ -31,6 +31,7 @@ import ArticlesPage from './pages/admin/ArticlesPage';
 import ArticleEditorPage from './pages/admin/ArticleEditorPage';
 import AdminCategoriesPage from './pages/admin/CategoriesPage';
 import AdminTagsPage from './pages/admin/TagsPage';
+import AdminCommentsPage from './pages/admin/CommentsPage';
 
 export default function App() {
   return (
@@ -82,6 +83,7 @@ export default function App() {
               <Route path="articles/:id/edit" element={<ArticleEditorPage />} />
               <Route path="categories" element={<AdminCategoriesPage />} />
               <Route path="tags" element={<AdminTagsPage />} />
+              <Route path="comments" element={<AdminCommentsPage />} />
             </Route>
           </Routes>
         </Router>

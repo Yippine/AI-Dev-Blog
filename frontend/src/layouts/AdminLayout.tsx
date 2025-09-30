@@ -18,7 +18,8 @@ export default function AdminLayout() {
     { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/admin/articles', label: 'Articles', icon: '📝' },
     { path: '/admin/categories', label: 'Categories', icon: '📁' },
-    { path: '/admin/tags', label: 'Tags', icon: '🏷️' }
+    { path: '/admin/tags', label: 'Tags', icon: '🏷️' },
+    { path: '/admin/comments', label: 'Comments', icon: '💬' }
   ];
 
   return (

@@ -1,10 +1,12 @@
 // ProfilePage Formula:
-// ProfilePage = (authenticated) -> ProfileView + EditMode(nickname, bio, avatar, password) -> UserContext.updateProfile
+// ProfilePage = (authenticated) -> ProfileView + EditMode(nickname, bio, avatar, password) + UserComments
 //             | (~authenticated) -> Redirect('/login')
+// UserComments = commentApi.getUserComments() -> CommentList
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
+import { commentApi, Comment } from '../../services/api';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -31,6 +33,11 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsTotalPages, setCommentsTotalPages] = useState(1);
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
@@ -47,6 +54,26 @@ export default function ProfilePage() {
       });
     }
   }, [user]);
+
+  // Load user comments
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUserComments();
+    }
+  }, [isAuthenticated, commentsPage]);
+
+  const loadUserComments = async () => {
+    try {
+      setCommentsLoading(true);
+      const response = await commentApi.getUserComments(commentsPage, 10);
+      setComments(response.comments);
+      setCommentsTotalPages(response.pagination.totalPages);
+    } catch (err) {
+      console.error('Load user comments error:', err);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProfileData({
@@ -259,7 +286,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Password Section */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-900">修改密碼</h2>
             {!passwordMode && (
@@ -326,6 +353,60 @@ export default function ProfilePage() {
             </form>
           ) : (
             <p className="text-sm text-gray-500">點擊「修改」按鈕來更改您的密碼</p>
+          )}
+        </div>
+
+        {/* User Comments Section */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">我的留言</h2>
+
+          {commentsLoading ? (
+            <div className="text-center py-8 text-gray-500">載入中...</div>
+          ) : comments.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">尚無留言</div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {comments.map((comment: any) => (
+                  <div key={comment.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <Link
+                        to={`/articles/${comment.article.id}`}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        {comment.article.title}
+                      </Link>
+                      <span className="text-sm text-gray-500">
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+                  </div>
+                ))}
+              </div>
+
+              {commentsTotalPages > 1 && (
+                <div className="mt-6 flex justify-center space-x-2">
+                  <button
+                    onClick={() => setCommentsPage(commentsPage - 1)}
+                    disabled={commentsPage === 1}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    上一頁
+                  </button>
+                  <span className="px-4 py-2">
+                    第 {commentsPage} 頁，共 {commentsTotalPages} 頁
+                  </span>
+                  <button
+                    onClick={() => setCommentsPage(commentsPage + 1)}
+                    disabled={commentsPage === commentsTotalPages}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    下一頁
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
