@@ -1,0 +1,74 @@
+// BlogSystem DataModel Formula:
+// DataModel = Article(id, title, content, summary, author, publish_date, view_count, category_id)
+//           × Category(id, name, slug, article_count)
+//           × Tag(id, name, slug)
+//           × ArticleTag(article_id, tag_id)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id           String    @id @default(cuid())
+  name         String    @unique
+  slug         String    @unique
+  description  String?
+  articleCount Int       @default(0) @map("article_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  articles     Article[]
+
+  @@map("categories")
+}
+
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  content     String    @db.Text
+  summary     String?
+  author      String
+  publishDate DateTime  @default(now()) @map("publish_date")
+  viewCount   Int       @default(0) @map("view_count")
+  categoryId  String    @map("category_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags        ArticleTag[]
+
+  @@index([categoryId])
+  @@index([publishDate])
+  @@map("articles")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  articles  ArticleTag[]
+
+  @@map("tags")
+}
+
+model ArticleTag {
+  articleId String   @map("article_id")
+  tagId     String   @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([articleId])
+  @@index([tagId])
+  @@map("article_tags")
+}
