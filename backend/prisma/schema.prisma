@@ -1,8 +1,9 @@
 // BlogSystem DataModel Formula:
-// DataModel = Article(id, title, content, summary, author, publish_date, view_count, category_id)
+// DataModel = Article(id, title, content, summary, author, publish_date, view_count, category_id, status, published_at)
 //           × Category(id, name, slug, article_count)
 //           × Tag(id, name, slug)
 //           × ArticleTag(article_id, tag_id)
+//           × User(id, email, password_hash, role, created_at)
 
 generator client {
   provider = "prisma-client-js"
@@ -11,6 +12,17 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("admin")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model Category {
@@ -33,7 +45,9 @@ model Article {
   content     String    @db.Text
   summary     String?
   author      String
+  status      String    @default("draft")
   publishDate DateTime  @default(now()) @map("publish_date")
+  publishedAt DateTime? @map("published_at")
   viewCount   Int       @default(0) @map("view_count")
   categoryId  String    @map("category_id")
   createdAt   DateTime  @default(now()) @map("created_at")
@@ -44,6 +58,7 @@ model Article {
 
   @@index([categoryId])
   @@index([publishDate])
+  @@index([status])
   @@map("articles")
 }
 

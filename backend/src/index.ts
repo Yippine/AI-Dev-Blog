@@ -19,6 +19,9 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
+// Static file serving for uploads
+app.use('/uploads', express.static('uploads'));
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
