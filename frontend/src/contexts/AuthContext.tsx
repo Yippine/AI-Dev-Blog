@@ -1,7 +1,7 @@
 // AuthContext Formula:
 // AuthContext = State(token, user) + Actions(login, logout) + Provider(children)
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
 interface User {

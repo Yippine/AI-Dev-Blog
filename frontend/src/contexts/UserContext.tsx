@@ -2,7 +2,7 @@
 // UserContext = State(token, user) + Actions(register, login, logout, updateProfile, changePassword)
 //             + Provider(children) + localStorage(persistence)
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 
 interface User {

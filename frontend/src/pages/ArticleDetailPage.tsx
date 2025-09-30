@@ -2,7 +2,7 @@
 // ArticleDetailPage = ArticleContent + Metadata + Tags + Category + InteractionSystem + SEO
 // InteractionSystem = LikeButton + ShareButtons + CommentSection
 
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { articleApi } from '../services/api';
@@ -12,12 +12,12 @@ import ErrorMessage from '../components/ErrorMessage';
 import LikeButton from '../components/LikeButton';
 import ShareButtons from '../components/ShareButtons';
 import CommentSection from '../components/CommentSection';
-import { UserContext } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext';
 import SEO from '../components/SEO';
 
 export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +59,7 @@ export default function ArticleDetailPage() {
     <div className="max-w-4xl mx-auto">
       <SEO
         title={`${article.title} - Blog System`}
-        description={article.summary}
+        description={article.summary || undefined}
         keywords={article.tags.map(tag => tag.name).join(', ')}
         author={article.author}
         type="article"

@@ -9,7 +9,7 @@ interface ShareButtonsProps {
   title: string;
 }
 
-const ShareButtons: React.FC<ShareButtonsProps> = ({ articleId, title }) => {
+const ShareButtons: React.FC<ShareButtonsProps> = ({ articleId, title: _title }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = async () => {

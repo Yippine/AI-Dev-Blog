@@ -3,14 +3,13 @@
 // CommentList = getAllComments() -> map(CommentItem + articleLink + userInfo + deleteButton)
 
 import { useState, useEffect } from 'react';
-import { commentApi, Comment } from '../../services/api';
+import { commentApi } from '../../services/api';
 
 export default function CommentsPage() {
   const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedArticle, setSelectedArticle] = useState<string>('');
 
   useEffect(() => {
     loadComments();

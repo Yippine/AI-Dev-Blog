@@ -34,7 +34,7 @@
 
   /* Markdown Content */
   .markdown-content {
-    @apply prose prose-lg max-w-none;
+    @apply max-w-none;
   }
 
   .markdown-content h1 {

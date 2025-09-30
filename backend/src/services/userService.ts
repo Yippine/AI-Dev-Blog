@@ -8,7 +8,7 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../utils/prisma';
+import prisma from '../utils/prisma';
 import { AuthService } from './authService';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';

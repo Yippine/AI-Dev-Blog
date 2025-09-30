@@ -2,7 +2,7 @@
 // ArticlesPage = ArticlesList(table) + SearchFilter + CreateButton -> ArticleEditorPage
 
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface Article {
@@ -18,7 +18,6 @@ interface Article {
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   const fetchArticles = async () => {
     try {
